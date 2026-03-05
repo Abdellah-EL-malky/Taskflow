@@ -1,6 +1,12 @@
 # TaskFlow — Task Management API
 
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-taskflow--lyart--pi.vercel.app-10b981?style=flat&logo=vercel)](https://taskflow-lyart-pi.vercel.app)
+
 A full-stack task management application built with **Spring Boot** and **React**.
+
+## 🔗 Live Demo
+
+**[https://taskflow-lyart-pi.vercel.app](https://taskflow-lyart-pi.vercel.app)**
 
 ## Tech Stack
 
@@ -18,7 +24,6 @@ A full-stack task management application built with **Spring Boot** and **React*
 ## Getting Started
 
 ### Backend
-
 ```bash
 cd backend
 mvn spring-boot:run
@@ -27,7 +32,6 @@ mvn spring-boot:run
 ```
 
 ### Frontend
-
 ```bash
 cd frontend
 npm install
@@ -45,5 +49,3 @@ npm run dev
 | POST | /api/tasks | Yes | Create task |
 | PUT | /api/tasks/:id | Yes | Update task |
 | DELETE | /api/tasks/:id | Yes | Delete task |
-
-

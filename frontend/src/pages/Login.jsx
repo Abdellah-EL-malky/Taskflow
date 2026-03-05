@@ -2,6 +2,9 @@ import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { authAPI } from '../services/api'
 import { useAuth } from '../context/AuthContext'
+import { ArrowRight } from 'lucide-react'
+
+const DEMO_USER = { email: 'demo@taskflow.com', password: 'demo1234', name: 'Demo User', avatarColor: '#10b981' }
 
 export default function Login() {
   const [form, setForm] = useState({ email: '', password: '' })
@@ -12,17 +15,23 @@ export default function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    setLoading(true)
-    setError('')
+    setLoading(true); setError('')
     try {
       const { data } = await authAPI.login(form)
       login({ name: data.name, email: data.email, role: data.role }, data.token)
       navigate('/dashboard')
-    } catch {
-      setError('Invalid credentials')
-    } finally {
-      setLoading(false)
-    }
+    } catch { setError('Invalid credentials') }
+    finally { setLoading(false) }
+  }
+
+  const loginAsDemo = async () => {
+    setLoading(true); setError('')
+    try {
+      const { data } = await authAPI.login({ email: DEMO_USER.email, password: DEMO_USER.password })
+      login({ name: data.name, email: data.email, role: data.role }, data.token)
+      navigate('/dashboard')
+    } catch { setError('Demo account unavailable') }
+    finally { setLoading(false) }
   }
 
   return (
@@ -34,37 +43,47 @@ export default function Login() {
           <p className="text-slate-400 mt-1">Sign in to manage your tasks</p>
         </div>
 
+        {/* Demo button */}
+        <div className="mb-6">
+          <p className="text-xs text-slate-500 mb-2 font-mono tracking-wider">QUICK ACCESS</p>
+          <button onClick={loginAsDemo} disabled={loading}
+            className="w-full flex items-center gap-3 px-4 py-3 bg-slate-900 hover:bg-slate-800 border border-slate-700 hover:border-emerald-500/40 rounded-xl transition-all text-left">
+            <div className="w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold text-white flex-shrink-0"
+              style={{ backgroundColor: DEMO_USER.avatarColor }}>
+              D
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium text-slate-200">Demo User</p>
+              <p className="text-xs text-slate-500">{DEMO_USER.email}</p>
+            </div>
+            <ArrowRight size={14} className="text-slate-500" />
+          </button>
+        </div>
+
+        <div className="flex items-center gap-3 mb-6">
+          <div className="flex-1 h-px bg-slate-800" />
+          <span className="text-xs text-slate-600 font-mono">or sign in manually</span>
+          <div className="flex-1 h-px bg-slate-800" />
+        </div>
+
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-xs font-mono text-slate-400 mb-2 tracking-wider">EMAIL</label>
-            <input
-              type="email"
-              value={form.email}
-              onChange={e => setForm({...form, email: e.target.value})}
+            <input type="email" value={form.email} onChange={e => setForm({...form, email: e.target.value})}
               className="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-emerald-500 transition-colors"
-              placeholder="you@example.com"
-              required
-            />
+              placeholder="you@example.com" required />
           </div>
           <div>
             <label className="block text-xs font-mono text-slate-400 mb-2 tracking-wider">PASSWORD</label>
-            <input
-              type="password"
-              value={form.password}
-              onChange={e => setForm({...form, password: e.target.value})}
+            <input type="password" value={form.password} onChange={e => setForm({...form, password: e.target.value})}
               className="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-emerald-500 transition-colors"
-              placeholder="••••••••"
-              required
-            />
+              placeholder="••••••••" required />
           </div>
 
           {error && <p className="text-red-400 text-sm">{error}</p>}
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-semibold py-3 rounded-lg transition-colors mt-2 disabled:opacity-50"
-          >
+          <button type="submit" disabled={loading}
+            className="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-semibold py-3 rounded-lg transition-colors mt-2 disabled:opacity-50">
             {loading ? 'Signing in...' : 'Sign in'}
           </button>
         </form>
