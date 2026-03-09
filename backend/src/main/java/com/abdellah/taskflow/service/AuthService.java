@@ -6,6 +6,7 @@ import com.abdellah.taskflow.repository.UserRepository;
 import com.abdellah.taskflow.security.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -36,9 +37,13 @@ public class AuthService {
     }
 
     public AuthResponse login(AuthRequest req) {
+    try {
         authManager.authenticate(new UsernamePasswordAuthenticationToken(req.getEmail(), req.getPassword()));
-        User user = userRepository.findByEmail(req.getEmail()).orElseThrow();
-        String token = jwtUtil.generateToken(user.getEmail());
-        return new AuthResponse(token, user.getName(), user.getEmail(), user.getRole().name());
+    } catch (BadCredentialsException e) {
+        throw new RuntimeException("Invalid credentials");
     }
+    User user = userRepository.findByEmail(req.getEmail()).orElseThrow(); // ← userRepository
+    String token = jwtUtil.generateToken(user.getEmail());
+    return new AuthResponse(token, user.getName(), user.getEmail(), user.getRole().name()); // ← getName()
+}
 }
